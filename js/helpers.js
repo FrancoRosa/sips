@@ -1,7 +1,11 @@
 const { colors } = require("./colors");
 const { getPdf } = require("./format");
-const { renameSync } = require("fs");
+const { renameSync, mkdir, mkdirSync } = require("fs");
 const { print } = require("unix-print");
+
+const getMonth = () => {
+  return new Date().toLocaleDateString("sv").slice(0, 7);
+};
 
 const printFile = (path) => {
   console.log(`...printing file ${path}`);
@@ -16,6 +20,19 @@ const printFile = (path) => {
 };
 
 const moveFile = (origin, destination) => {
+  // check if "sips exists"
+
+  try {
+    mkdirSync("/tmp/sips");
+  } catch {
+    console.log(".. already exists");
+  }
+  try {
+    mkdirSync(`/tmp/sips/${getMonth()}`);
+  } catch {
+    console.log(".. already exists");
+  }
+
   try {
     console.log({ origin, destination });
     renameSync(origin, destination);
@@ -29,7 +46,8 @@ const processPayload = (payload) => {
   if (payload) {
     if (payload.includes(">print")) {
       const fileName = getFileName();
-      const path = `/tmp/${fileName}`;
+      const month = getMonth();
+      const path = `/tmp/sips/${month}/${fileName}`;
       console.log(colors.red, `----------- printing ${path} -----------`);
       console.log(colors.red, payload);
       getPdf(payload).then((res) => {
