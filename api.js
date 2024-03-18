@@ -25,6 +25,7 @@ setInterval(() => {
 const handleSerial = (data) => {
   count = 0;
   payload = payload + data;
+  console.log(data);
 };
 
 parser.on("data", handleSerial);
