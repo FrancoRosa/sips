@@ -1,0 +1,53 @@
+>print date
+
+MAR 14,2024   09:29 AM
+
+5028I 14MAR24 09:31A  706970890065300011 SQ:001 PU:01 PD:04 00012.666 MAG-OFF
+PROMPTS- 12:****  
+
+>print trans 5015
+
+  -ALLOW WRAP AROUND
+  -SAVE UNAUTHZ'D USERS ALSO
+  -TRANSACTION BUFFER SIZE: 1625
+  -NEXT TRANSACTION NUMBER: 5029
+   ** HOLLERITH CARDS ONLY **
+
+    *** PRODUCT TOTALS ***
+
+
+    *** PUMP TOTALS ***
+
+
+QUANTITIES FOR PCT 1:
+POS 1: 1  POS 2: X  POS 3: X  POS 4: X  POS 5: X  POS 6: X  POS 7: X  POS 8: X 
+--------- --------- --------- --------- --------- --------- --------- ---------
+    0.000     0.000     0.000     0.000     0.000     0.000     0.000     0.000
+
+
+TRANSACTIONS: 0     GRAND TOTAL: $0.00
+           AVERAGE: $0.00
+
+>print sys
+
+  SYSTEM 2: BITMAP VERSION #: 26.70L
+  EPROM CHK: 0F72
+  DISPLAY: 2x16    PPU: PROGRAMMABLE
+
+MAR 14,2024    09:38 AM   SYSTEM ON    BATTERY OK
+
+INSTALLED FITs:   
+    1: STATUS --running
+
+INSTALLED PCTs:
+  PCT 1, POSITIONS:  1
+    STATUS --running
+
+LOW TANKS: NONE
+
+POWER FAIL TIMES:
+   FEB 22,2023   02:40 PM
+   FEB 23,2023   06:03 PM
+   FEB 23,2023   06:03 PM
+   FEB 23,2023   06:04 PM
+

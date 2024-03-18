@@ -1,0 +1,6 @@
+const input = `
+`;
+
+const output = `
+5027I 13MAR24 11:06A  706970890065300011 SQ:003 PU:01 PD:04 00039.333 MAG-OFF
+PROMPTS- 12:****`;
