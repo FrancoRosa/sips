@@ -19,9 +19,7 @@ const printFile = (path) => {
     });
 };
 
-const moveFile = (origin, destination) => {
-  // check if "sips exists"
-
+const createDir = () => {
   try {
     mkdirSync("/tmp/sips");
   } catch {
@@ -32,6 +30,10 @@ const moveFile = (origin, destination) => {
   } catch {
     console.log(".. already exists");
   }
+};
+
+const moveFile = (origin, destination) => {
+  createDir();
 
   try {
     console.log({ origin, destination });
@@ -62,9 +64,9 @@ const processPayload = (payload) => {
         "----------- Append to log & update pdf -----------"
       );
       console.log(colors.cyan, payload);
-      if (fileName) {
-        getPdf(payload, moveFile, `/tmp/${fileName}`);
-      }
+      // append string to filename
+      //generate pdf
+      // move file where it needs
       console.log(colors.cyan, "----------- ----------- -----------");
     }
   }
