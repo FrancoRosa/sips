@@ -1,7 +1,13 @@
 const { SerialPort, ReadlineParser } = require("serialport");
 const { processPayload } = require("./js/helpers");
 
-const port = new SerialPort({ path: "/dev/pts/4", baudRate: 1200 });
+const port = new SerialPort({
+  path: "/dev/ttyUSB0",
+  baudRate: 1200,
+  parity: "even",
+  dataBits: 7,
+});
+
 const parser = port.pipe(new ReadlineParser({ delimiter: "\r\n" }));
 
 let count = 0;
