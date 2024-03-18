@@ -24,7 +24,7 @@ setInterval(() => {
 
 const handleSerial = (data) => {
   count = 0;
-  payload = payload + data;
+  payload = payload + data + "\n";
   console.log(data);
 };
 

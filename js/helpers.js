@@ -1,23 +1,53 @@
 const { colors } = require("./colors");
+const { getPdf } = require("./format");
+const { renameSync } = require("fs");
+const { print } = require("unix-print");
+
+const printFile = (path) => {
+  console.log(`...printing file ${path}`);
+  print(path)
+    .then((res) => {
+      console.log(colors.cyan, res);
+    })
+    .catch((err) => {
+      console.log(`... error ${path}`);
+      console.log(err);
+    });
+};
+
+const moveFile = (origin, destination) => {
+  try {
+    console.log({ origin, destination });
+    renameSync(origin, destination);
+  } catch (err) {
+    console.log("... error moving file");
+    console.error(err);
+  }
+};
 
 const processPayload = (payload) => {
   if (payload) {
     if (payload.includes(">print")) {
-      console.log(colors.red, "_____ printing _______");
+      const fileName = getFileName();
+      const path = `/tmp/${fileName}`;
+      console.log(colors.red, `----------- printing ${path} -----------`);
       console.log(colors.red, payload);
-      //generate temp pdf
-      console.log(colors.red, getFileName());
-
-      //move file to usb (date time printed)
-      //print pdf
-      console.log(colors.red, "_____ ________ _______");
+      getPdf(payload).then((res) => {
+        moveFile(res, path);
+        printFile(path);
+      });
+      console.log(colors.red, "----------- ----------- -----------");
     } else {
-      console.log(colors.cyan, "_____ Append to log & update pdf _______");
-
+      const fileName = getDateFromTx(payload);
+      console.log(
+        colors.cyan,
+        "----------- Append to log & update pdf -----------"
+      );
       console.log(colors.cyan, payload);
-      console.log(colors.red, getDateFromTx(payload));
-
-      console.log(colors.cyan, "_____ ________ _______");
+      if (fileName) {
+        getPdf(payload, moveFile, `/tmp/${fileName}`);
+      }
+      console.log(colors.cyan, "----------- ----------- -----------");
     }
   }
 };
@@ -30,11 +60,9 @@ const getFileName = () => {
 
 const getDateFromTx = (payload) => {
   const lines = payload.split("\n");
-  console.log({ lines });
   let name;
   lines.forEach((line) => {
     const info = line.replace(/ +/g, " ").split(" ");
-    console.log({ info });
     if (info.length == 9) {
       name = `${info[1]}.pdf`;
       return;

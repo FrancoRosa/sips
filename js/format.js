@@ -1,10 +1,45 @@
 const pdf = require("pdf-creator-node");
 const { readFileSync } = require("fs");
-var html1 = readFileSync("template1.html", "utf8");
-var html2 = readFileSync("template2.html", "utf8");
+const { colors } = require("./colors");
+const html = readFileSync(__dirname + "/template.html", "utf8");
 const sample1 = `
 5027I 13MAR24 11:06A  706970890065300011 SQ:003 PU:01 PD:04 00039.333 MAG-OFF
-PROMPTS- 12:****`;
+PROMPTS- 12:****
+
+5027I 13MAR24 11:06A  706970890065300011 SQ:003 PU:01 PD:04 00039.333 MAG-OFF
+PROMPTS- 12:****
+
+5027I 13MAR24 11:06A  706970890065300011 SQ:003 PU:01 PD:04 00039.333 MAG-OFF
+PROMPTS- 12:****
+
+5027I 13MAR24 11:06A  706970890065300011 SQ:003 PU:01 PD:04 00039.333 MAG-OFF
+PROMPTS- 12:****
+
+5027I 13MAR24 11:06A  706970890065300011 SQ:003 PU:01 PD:04 00039.333 MAG-OFF
+PROMPTS- 12:****
+
+5027I 13MAR24 11:06A  706970890065300011 SQ:003 PU:01 PD:04 00039.333 MAG-OFF
+PROMPTS- 12:****
+
+5027I 13MAR24 11:06A  706970890065300011 SQ:003 PU:01 PD:04 00039.333 MAG-OFF
+PROMPTS- 12:****
+
+5027I 13MAR24 11:06A  706970890065300011 SQ:003 PU:01 PD:04 00039.333 MAG-OFF
+PROMPTS- 12:****
+
+5027I 13MAR24 11:06A  706970890065300011 SQ:003 PU:01 PD:04 00039.333 MAG-OFF
+PROMPTS- 12:****
+
+5027I 13MAR24 11:06A  706970890065300011 SQ:003 PU:01 PD:04 00039.333 MAG-OFF
+PROMPTS- 12:****
+
+5027I 13MAR24 11:06A  706970890065300011 SQ:003 PU:01 PD:04 00039.333 MAG-OFF
+PROMPTS- 12:****
+
+5027I 13MAR24 11:06A  706970890065300011 SQ:003 PU:01 PD:04 00039.333 MAG-OFF
+PROMPTS- 12:****
+
+`;
 
 const sample2 = `
 >print trans 5015
@@ -32,61 +67,39 @@ TRANSACTIONS: 0     GRAND TOTAL: $0.00
 
 `;
 
-const records = [];
-
-for (let index = 0; index < 20; index++) {
-  records.push(sample1);
-}
-
 const options = {
   format: "A4",
   orientation: "landscape",
-  border: "8mm",
+  border: "5mm",
 
   footer: {
     height: "5mm",
     contents: {
-      default:
-        '<p><span style="color: #444;">{{page}}</span>/<span>{{pages}}</span><p>', // fallback value
+      default: "<p>{{page}}/{{pages}}<p>",
     },
   },
 };
 
-const document1 = {
-  html: html1,
-  data: {
-    records,
-  },
-  path: "./output1.pdf",
-  type: "",
-};
-
-const document2 = {
-  html: html2,
-  data: {
-    payload: sample2,
-  },
-  path: "./output2.pdf",
-  type: "",
-};
-
-const getPdf = (transactions = false) => {
-  pdf
-    .create(
+const getPdf = async (payload) => {
+  console.log(colors.green, ".... creating pdf");
+  let response;
+  try {
+    response = await pdf.create(
       {
-        html: transactions ? html1 : html2,
-        data: {
-          payload: sample2,
-        },
-        path: transactions ? `${getDateFromTx(payload)}.pdf` : getDate(),
+        html,
+        data: { payload },
+        path: "./output.pdf",
         type: "",
       },
       options
-    )
-    .then((res) => {
-      console.log(res);
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+    );
+  } catch (error) {
+    console.error("... error generating pdf");
+    console.error(error);
+  }
+  if (response) {
+    return response.filename;
+  }
 };
+
+exports.getPdf = getPdf;
