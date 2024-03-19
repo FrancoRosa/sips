@@ -1,6 +1,6 @@
 const { colors } = require("./colors");
 const { getPdf } = require("./format");
-const { renameSync, mkdir, mkdirSync } = require("fs");
+const { renameSync, mkdirSync, appendFileSync, readFileSync } = require("fs");
 const { print } = require("unix-print");
 
 const getMonth = () => {
@@ -44,6 +44,12 @@ const moveFile = (origin, destination) => {
   }
 };
 
+const appendPayload = (path, payload) => {
+  createDir();
+  appendFileSync(path, payload);
+  return readFileSync(path);
+};
+
 const processPayload = (payload) => {
   if (payload) {
     if (payload.includes(">print")) {
@@ -59,14 +65,15 @@ const processPayload = (payload) => {
       console.log(colors.red, "----------- ----------- -----------");
     } else {
       const fileName = getDateFromTx(payload);
+      const month = getMonth();
+      const path = `/tmp/sips/${month}/${fileName}`;
       console.log(
         colors.cyan,
         "----------- Append to log & update pdf -----------"
       );
       console.log(colors.cyan, payload);
-      // append string to filename
-      //generate pdf
-      // move file where it needs
+      const records = appendPayload(path.replace(".pdf", ".txt"), payload);
+      getPdf(records).then((res) => moveFile(res, path));
       console.log(colors.cyan, "----------- ----------- -----------");
     }
   }
