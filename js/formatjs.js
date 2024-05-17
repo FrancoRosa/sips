@@ -1,9 +1,7 @@
-const pdf = require("pdf-creator-node");
 const { jsPDF } = require("jspdf");
 
 const { readFileSync } = require("fs");
 const { colors } = require("./colors");
-const html = readFileSync(__dirname + "/template.html", "utf8");
 const sample1 = `
 00001 13MAR24 11:06A  706970890065300011 SQ:003 PU:01 PD:04 00039.333 MAG-OFF
 PROMPTS- 12:****
@@ -88,41 +86,6 @@ TRANSACTIONS: 0     GRAND TOTAL: $0.00
 
 `;
 
-const options = {
-  format: "A4",
-  orientation: "landscape",
-  border: "5mm",
-
-  footer: {
-    height: "5mm",
-    contents: {
-      default: "<p>{{page}}/{{pages}}<p>",
-    },
-  },
-};
-
-const getPdf = async (payload) => {
-  console.log(colors.green, ".... creating pdf");
-  let response;
-  try {
-    response = await pdf.create(
-      {
-        html,
-        data: { payload },
-        path: "./output.pdf",
-        type: "",
-      },
-      options
-    );
-  } catch (error) {
-    console.error("... error generating pdf");
-    console.error(error);
-  }
-  if (response) {
-    return response.filename;
-  }
-};
-
 const groupArr = (arr, groupSize = 23) => {
   let results = [];
   for (let i = 0; i < arr.length; i += groupSize) {
@@ -131,14 +94,13 @@ const groupArr = (arr, groupSize = 23) => {
   return results;
 };
 
-const getJsPdf = async (payload, file, linesPerPage = 36) => {
+const getPdf = (payload, file, linesPerPage = 36) => {
   const doc = new jsPDF({
     orientation: "landscape",
     unit: "mm",
     format: "letter",
   });
 
-  console.log(doc.getFontList());
   doc.setFont("courier", "normal");
 
   const drawPageNumber = (count, pages) => {
@@ -149,8 +111,6 @@ const getJsPdf = async (payload, file, linesPerPage = 36) => {
 
   const pages = groupArr(payload.split("\n"), linesPerPage);
   pages.forEach((page, count) => {
-    // doc.setFont({ fontName: "courier", fontStyle: "normal" });
-    // console.log(doc.getFontList());
     doc.setFontSize(13);
     doc.setTextColor(0);
     doc.text(page.join("\n"), 10, 10);
@@ -165,7 +125,6 @@ const getJsPdf = async (payload, file, linesPerPage = 36) => {
   console.log("PDF generated successfully");
 };
 
-getJsPdf(sample1, "./output.pdf").then((r) => console.log(r));
+getPdf(sample1, "./output.pdf");
 
-exports.getJsPdf = getJsPdf;
 exports.getPdf = getPdf;
