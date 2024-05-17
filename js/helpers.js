@@ -1,5 +1,5 @@
 const { colors } = require("./colors");
-const { getPdf } = require("./format");
+const { getPdf } = require("./formatjs");
 const { renameSync, mkdirSync, appendFileSync, readFileSync } = require("fs");
 const { print } = require("unix-print");
 

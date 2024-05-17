@@ -1,6 +1,5 @@
 const { jsPDF } = require("jspdf");
 
-const { readFileSync } = require("fs");
 const { colors } = require("./colors");
 const sample1 = `
 00001 13MAR24 11:06A  706970890065300011 SQ:003 PU:01 PD:04 00039.333 MAG-OFF
@@ -120,11 +119,9 @@ const getPdf = (payload, file, linesPerPage = 36) => {
       doc.addPage();
     }
   });
-
+  console.log(colors.green, ".... creating pdf");
   doc.save(file);
-  console.log("PDF generated successfully");
+  console.log(colors.green, ".... successfully created pdf");
 };
-
-getPdf(sample1, "./output.pdf");
 
 exports.getPdf = getPdf;
