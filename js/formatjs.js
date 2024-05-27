@@ -93,7 +93,7 @@ const groupArr = (arr, groupSize = 23) => {
   return results;
 };
 
-const getPdf = (payload, file, linesPerPage = 36) => {
+const getPdf = (payload, file= "./output.pdf", linesPerPage = 36) => {
   const doc = new jsPDF({
     orientation: "landscape",
     unit: "mm",
