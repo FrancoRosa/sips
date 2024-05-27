@@ -1,3 +1,3 @@
 const { print } = require("unix-print");
 
-print("./output.pdf").then(console.log);
+print("./sample.pdf").then(console.log);

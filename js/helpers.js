@@ -1,5 +1,5 @@
 const { colors } = require("./colors");
-const { getPdf } = require("./format");
+const { getPdf } = require("./formatjs");
 const { renameSync, mkdirSync, appendFileSync, readFileSync } = require("fs");
 const { print } = require("unix-print");
 
@@ -47,7 +47,7 @@ const moveFile = (origin, destination) => {
 const appendPayload = (path, payload) => {
   createDir();
   appendFileSync(path, payload);
-  return readFileSync(path);
+  return readFileSync(path).toString();
 };
 
 const processPayload = (payload) => {
@@ -58,10 +58,10 @@ const processPayload = (payload) => {
       const path = `/tmp/sips/${month}/${fileName}`;
       console.log(colors.red, `----------- printing ${path} -----------`);
       console.log(colors.red, payload);
-      getPdf(payload).then((res) => {
-        moveFile(res, path);
+      getPdf(payload)
+        moveFile("./output.pdf", path);
         printFile(path);
-      });
+      
       console.log(colors.red, "----------- ----------- -----------");
     } else {
       const fileName = getDateFromTx(payload);
@@ -73,7 +73,8 @@ const processPayload = (payload) => {
       );
       console.log(colors.cyan, payload);
       const records = appendPayload(path.replace(".pdf", ".txt"), payload);
-      getPdf(records).then((res) => moveFile(res, path));
+      getPdf(records)
+      moveFile("./output.pdf", path);
       console.log(colors.cyan, "----------- ----------- -----------");
     }
   }
