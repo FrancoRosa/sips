@@ -1,3 +1,6 @@
+// TODO connect to Supabse and read settings
+// if id not located, just work offline
+
 const { SerialPort, ReadlineParser } = require("serialport");
 const { processPayload } = require("./js/helpers");
 

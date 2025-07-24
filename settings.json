@@ -1,8 +1,3 @@
 {
-    "receivers": [
-        "me@me.me"
-    ],
-    "time": [
-        "08:30:30"
-    ]
+    "sips_id": 100
 }
