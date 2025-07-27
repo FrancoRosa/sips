@@ -58,11 +58,22 @@ const processPayload = (payload) => {
       const path = `/tmp/sips/${month}/${fileName}`;
       console.log(colors.red, `----------- printing ${path} -----------`);
       console.log(colors.red, payload);
-      getPdf(payload)
-        moveFile("./output.pdf", path);
-        printFile(path);
-      
+      getPdf(payload);
+      moveFile("./output.pdf", path);
+      printFile(path);
+
       console.log(colors.red, "----------- ----------- -----------");
+      return;
+    } else if (payload.includes("MIDNIGHT TOTALS")) {
+      const fileName = getDateFromTx(payload).replace(".pdf", "-totals.pdf");
+      const month = getMonth();
+      const path = `/tmp/sips/${month}/${fileName}`;
+      getPdf(payload);
+      moveFile("./output.pdf", path);
+      console.log(colors.cyan, "----- upload totals and logs ----");
+      console.log(colors.cyan, "----------- ----------- -----------");
+
+      return;
     } else {
       const fileName = getDateFromTx(payload);
       const month = getMonth();
@@ -73,9 +84,10 @@ const processPayload = (payload) => {
       );
       console.log(colors.cyan, payload);
       const records = appendPayload(path.replace(".pdf", ".txt"), payload);
-      getPdf(records)
+      getPdf(records);
       moveFile("./output.pdf", path);
       console.log(colors.cyan, "----------- ----------- -----------");
+      return;
     }
   }
 };
@@ -86,17 +98,9 @@ const getFileName = () => {
   return `${date.split("-").join("")}_${time.split(":").join("")}.pdf`;
 };
 
-const getDateFromTx = (payload) => {
-  const lines = payload.split("\n");
-  let name;
-  lines.forEach((line) => {
-    const info = line.replace(/ +/g, " ").split(" ");
-    if (info.length == 9) {
-      name = `${info[1]}.pdf`;
-      return;
-    }
-  });
-  return name;
+const getDateFromTx = () => {
+  const date = new Date().toISOString().slice(0, 10);
+  return `${date}.pdf`;
 };
 
 exports.processPayload = processPayload;
