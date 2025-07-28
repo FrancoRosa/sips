@@ -81,7 +81,7 @@ const options = {
 };
 
 const getPdf = async (payload) => {
-  console.log(colors.green, ".... creating pdf");
+  console.log(colors.green, "... creating pdf");
   let response;
   try {
     response = await pdf.create(

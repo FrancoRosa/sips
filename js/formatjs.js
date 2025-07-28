@@ -93,7 +93,7 @@ const groupArr = (arr, groupSize = 23) => {
   return results;
 };
 
-const getPdf = (payload, file= "./output.pdf", linesPerPage = 36) => {
+const getPdf = (payload, file = "./output.pdf", linesPerPage = 36) => {
   const doc = new jsPDF({
     orientation: "landscape",
     unit: "mm",
@@ -119,9 +119,9 @@ const getPdf = (payload, file= "./output.pdf", linesPerPage = 36) => {
       doc.addPage();
     }
   });
-  console.log(colors.green, ".... creating pdf");
+  console.log(colors.green, "... creating pdf");
   doc.save(file);
-  console.log(colors.green, ".... successfully created pdf");
+  console.log(colors.green, "... successfully created pdf");
 };
 
 exports.getPdf = getPdf;

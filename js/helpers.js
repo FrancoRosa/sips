@@ -8,14 +8,14 @@ const getMonth = () => {
 };
 
 const printFile = (path) => {
-  console.log(`...printing file ${path}`);
+  console.log(colors.green, `... printing file ${path}`);
   print(path)
     .then((res) => {
       console.log(colors.cyan, res);
     })
     .catch((err) => {
-      console.log(`... error ${path}`);
-      console.log(err);
+      console.log(colors.red, `... error ${path}`);
+      console.log(colors.red, err);
     });
 };
 
@@ -23,12 +23,12 @@ const createDir = () => {
   try {
     mkdirSync("/tmp/sips");
   } catch {
-    console.log(".. already exists");
+    console.log(colors.red, "... sips already exists");
   }
   try {
     mkdirSync(`/tmp/sips/${getMonth()}`);
   } catch {
-    console.log(".. already exists");
+    console.log(colors.red, `... sips/${getMonth()} already exists`);
   }
 };
 
@@ -36,10 +36,10 @@ const moveFile = (origin, destination) => {
   createDir();
 
   try {
-    console.log({ origin, destination });
     renameSync(origin, destination);
+    console.log(colors.green, `... destination: ${destination}`);
   } catch (err) {
-    console.log("... error moving file");
+    console.log(colors.red, "... error moving file");
     console.error(err);
   }
 };
@@ -51,6 +51,8 @@ const appendPayload = (path, payload) => {
 };
 
 const processPayload = (payload) => {
+  console.log(colors.green, `... ${new Date().toLocaleString("sv")}`)
+  console.log(colors.cyan, payload)
   if (payload) {
     if (payload.includes(">print")) {
       const fileName = getFileName();
@@ -61,8 +63,6 @@ const processPayload = (payload) => {
       getPdf(payload);
       moveFile("./output.pdf", path);
       printFile(path);
-
-      console.log(colors.red, "----------- ----------- -----------");
       return;
     } else if (payload.includes("MIDNIGHT TOTALS")) {
       const fileName = getDateFromTx(payload).replace(".pdf", "-totals.pdf");
@@ -70,8 +70,7 @@ const processPayload = (payload) => {
       const path = `/tmp/sips/${month}/${fileName}`;
       getPdf(payload);
       moveFile("./output.pdf", path);
-      console.log(colors.cyan, "----- upload totals and logs ----");
-      console.log(colors.cyan, "----------- ----------- -----------");
+      console.log(colors.cyan, "... upload totals and logs");
 
       return;
     } else {
@@ -79,10 +78,9 @@ const processPayload = (payload) => {
       const month = getMonth();
       const path = `/tmp/sips/${month}/${fileName}`;
       console.log(
-        colors.cyan,
-        "----------- Append to log & update pdf -----------"
+        colors.green,
+        "... append to log & update pdf"
       );
-      console.log(colors.cyan, payload);
       const records = appendPayload(path.replace(".pdf", ".txt"), payload);
       getPdf(records);
       moveFile("./output.pdf", path);
