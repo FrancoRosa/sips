@@ -1,11 +1,14 @@
-// TODO connect to Supabse and read settings
-// if id not located, just work offline
-
 const { SerialPort, ReadlineParser } = require("serialport");
 const { processPayload } = require("./js/helpers");
+const SERIAL_PORT = "/dev/ttyUSB0"
+
+// Connect to supabase
+// save transacion as text as long as the string contains "MAG-ONLINE"
+// save midnight report as text 
+// 
 
 const port = new SerialPort({
-  path: "/dev/ttyUSB0",
+  path: SERIAL_PORT,
   baudRate: 1200,
   parity: "even",
   dataBits: 7,

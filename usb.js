@@ -1,14 +1,22 @@
 const { execSync } = require("node:child_process");
 const { usb, getDeviceList } = require("usb");
-const crypto = require("crypto");
-
 const timestamp = () => new Date().toLocaleString("sv");
 
+const USER_NAME = "fx"
+const EXT_DIR = "/media/usb";
+const LOG_NAME = "/media/usb/sips_logs.txt";
+const LOCAL_DIR = `/home/${USER_NAME}/sips_files`;
+
 const print_log = (msg) => {
-  const log_name = "/media/usb/dips_logs.txt";
-  const message = timestamp() + " - " + msg;
-  console.log(message);
-  execSync(`echo "${message}" >> ${log_name}`);
+  try {
+    const message = timestamp() + " - " + msg;
+    console.log(message);
+    execSync(`echo "${message}" >> ${LOG_NAME}`);
+
+  } catch (error) {
+    console.error("error printing to logs")
+  }
+
 };
 
 let devices = getDeviceList();
@@ -21,7 +29,7 @@ usb.on("attach", (device) => {
 });
 
 usb.on("detach", (device) => {
-  console.log(timestamp(), "dettach usb");
+  console.log(timestamp(), "detach usb");
 
   devices.splice(
     devices.findIndex((d) => d.deviceAddress === device.deviceAddress),
@@ -45,20 +53,6 @@ const getDeviceName = () => {
   }
 };
 
-const decryptObject = (encrypted) => {
-  const key = "1dostrescuatrocincoseissieteocho";
-  const { data, iv } = encrypted;
-  const decipher = crypto.createDecipheriv(
-    "aes-256-cbc",
-    key,
-    Buffer.from(iv, "hex")
-  );
-  const decrypted = Buffer.concat([
-    decipher.update(Buffer.from(data, "hex")),
-    decipher.final(),
-  ]);
-  return JSON.parse(decrypted.toString());
-};
 
 const mount = () => {
   setTimeout(() => {
@@ -69,49 +63,25 @@ const mount = () => {
       console.log(timestamp(), "mounting device");
       const dev = getDeviceName();
       if (dev) {
-        execSync("sudo mkdir -p /media/usb");
-        execSync("sudo chown -R pi:pi /media/usb");
+        execSync(`sudo mkdir -p ${EXT_DIR}`);
+        execSync(`sudo chown -R ${USER_NAME}:${USER_NAME} ${EXT_DIR}`);
         try {
-          execSync(`sudo mount --no-mtab ${dev} /media/usb -o uid=pi,gid=pi`);
+          execSync(`sudo mount --no-mtab ${dev} ${EXT_DIR} -o uid=${USER_NAME},gid=${USER_NAME}`);
         } catch (error) {
           console.log(timestamp(), "already mounted");
           print_log("device mounted");
         }
         console.log(timestamp(), "device mounted");
         pendrive = true;
-        let response;
-        let payload;
-        let decrypted;
-        try {
-          response = execSync("cat /media/usb/dips_settings.json");
-          print_log("file found");
-          payload = JSON.parse(response.toString());
-        } catch (error) {
-          print_log("no settings file found");
-        }
 
         try {
-          decrypted = decryptObject(payload);
-          print_log("settings format accepted");
-
-          print_log(JSON.stringify(decrypted));
-          const settings = JSON.parse(
-            execSync("cat /home/pi/dips/settings.json")
-          );
-          const { schedule, emails } = decrypted;
-          settings.email.time = schedule;
-          settings.email.receivers = emails;
-
-          const newSettings = JSON.stringify(settings, null, 2);
-          execSync(`echo '${newSettings}' > /home/pi/dips/settings.json`);
-          try {
-            execSync("sudo pm2 stop dips && sleep 5 && sudo pm2 start dips");
-            print_log("settings updated");
-          } catch (error) {
-            print_log("settings not updated");
-          }
+          console.log(execSync(`ls ${LOCAL_DIR}`).toString())
+          console.log(`local sips exists`)
+          console.log(execSync(`rsync -av ${LOCAL_DIR} ${EXT_DIR}`).toString())
+          print_log("sync completed");
         } catch (error) {
-          print_log("settings format contains errors");
+          console.log("error saving files")
+          print_log("device mounted");
         }
       }
     }

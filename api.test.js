@@ -1,7 +1,7 @@
 const { processPayload } = require("./js/helpers");
 
 const payload1 = `PROMPTS- 12:****  02:1910  
-1721I 28JUL25 11:24A  706970816279376527 SQ:032 PU:10 PD:03 00043.830 MAG-ONLINE
+1721I 28JUL25 11:24p  706970816279376527 SQ:032 PU:10 PD:03 00043.830 MAG-ONLINE
        a: `
 const payload2 = ">print"
 
@@ -39,3 +39,5 @@ POS 1: 11 POS 2: 12 POS 3: 13 POS 4: X  POS 5: X  POS 6: X  POS 7: X  POS 8: X
 `
 
 processPayload(payload3);
+// processPayload(payload3);
+// processPayload(payload3);
