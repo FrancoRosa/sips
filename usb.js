@@ -2,7 +2,7 @@ const { execSync } = require("node:child_process");
 const { usb, getDeviceList } = require("usb");
 const timestamp = () => new Date().toLocaleString("sv");
 
-const USER_NAME = "fx"
+const USER_NAME = "pi";
 const EXT_DIR = "/media/usb";
 const LOG_NAME = "/media/usb/sips_logs.txt";
 const LOCAL_DIR = `/home/${USER_NAME}/sips_files`;
@@ -12,11 +12,9 @@ const print_log = (msg) => {
     const message = timestamp() + " - " + msg;
     console.log(message);
     execSync(`echo "${message}" >> ${LOG_NAME}`);
-
   } catch (error) {
-    console.error("error printing to logs")
+    console.error("error printing to logs");
   }
-
 };
 
 let devices = getDeviceList();
@@ -53,7 +51,6 @@ const getDeviceName = () => {
   }
 };
 
-
 const mount = () => {
   setTimeout(() => {
     pendrive = false;
@@ -66,7 +63,9 @@ const mount = () => {
         execSync(`sudo mkdir -p ${EXT_DIR}`);
         execSync(`sudo chown -R ${USER_NAME}:${USER_NAME} ${EXT_DIR}`);
         try {
-          execSync(`sudo mount --no-mtab ${dev} ${EXT_DIR} -o uid=${USER_NAME},gid=${USER_NAME}`);
+          execSync(
+            `sudo mount --no-mtab ${dev} ${EXT_DIR} -o uid=${USER_NAME},gid=${USER_NAME}`
+          );
         } catch (error) {
           console.log(timestamp(), "already mounted");
           print_log("device mounted");
@@ -75,12 +74,12 @@ const mount = () => {
         pendrive = true;
 
         try {
-          console.log(execSync(`ls ${LOCAL_DIR}`).toString())
-          console.log(`local sips exists`)
-          console.log(execSync(`rsync -av ${LOCAL_DIR} ${EXT_DIR}`).toString())
+          console.log(execSync(`ls ${LOCAL_DIR}`).toString());
+          console.log(`local sips exists`);
+          console.log(execSync(`rsync -av ${LOCAL_DIR} ${EXT_DIR}`).toString());
           print_log("sync completed");
         } catch (error) {
-          console.log("error saving files")
+          console.log("error saving files");
           print_log("device mounted");
         }
       }

@@ -5,10 +5,9 @@ const { print } = require("unix-print");
 const { sips_id } = require("../settings.json");
 const { insertReport, insertTransactions } = require("./db");
 
-
-const USER = "fx"
-const LOCAL_DIR = `/home/${USER}/sips_files`
-console.log({ sips_id })
+const USER = "pi";
+const LOCAL_DIR = `/home/${USER}/sips_files`;
+console.log({ sips_id });
 
 const getMonth = () => {
   return new Date().toLocaleDateString("sv").slice(0, 7);
@@ -58,8 +57,8 @@ const appendPayload = (path, payload) => {
 };
 
 const processPayload = (payload) => {
-  console.log(colors.green, `... ${new Date().toLocaleString("sv")}`)
-  console.log(colors.cyan, payload)
+  console.log(colors.green, `... ${new Date().toLocaleString("sv")}`);
+  console.log(colors.cyan, payload);
   if (payload) {
     if (payload.includes(">print")) {
       const fileName = getFileName();
@@ -75,7 +74,7 @@ const processPayload = (payload) => {
       const fileName = getDateFromTx(payload).replace(".pdf", "-totals.pdf");
       const month = getMonth();
       const path = `${LOCAL_DIR}/${month}/${fileName}`;
-      insertReport(payload)
+      insertReport(payload);
       getPdf(payload);
       moveFile("./output.pdf", path);
       console.log(colors.cyan, "... upload totals and logs");
@@ -85,12 +84,11 @@ const processPayload = (payload) => {
       const fileName = getDateFromTx(payload);
       const month = getMonth();
       const path = `${LOCAL_DIR}/${month}/${fileName}`;
-      console.log(
-        colors.green,
-        "... append to log & update pdf"
-      );
+      console.log(colors.green, "... append to log & update pdf");
       const records = appendPayload(path.replace(".pdf", ".txt"), payload);
-      insertTransactions(payload.split('\n').filter(line => line.includes("MAG")))
+      insertTransactions(
+        payload.split("\n").filter((line) => line.includes("MAG"))
+      );
       getPdf(records);
       moveFile("./output.pdf", path);
       console.log(colors.cyan, "----------- ----------- -----------");
