@@ -42,8 +42,13 @@ serve(async (req) => {
     .from("sips_transactions")
     .select("transaction")
     .eq("sips_location_id", sips_location_id)
-    .eq("date", report.date);
+    .eq("date", report.date)
+    .order("id", {
+      ascending: true,
+    });
+  //
   // Generate PDF report
+  //
   const doc = new jsPDF({
     orientation: "portrait",
     unit: "mm",
@@ -68,6 +73,9 @@ serve(async (req) => {
     if (i < pages.length - 1) doc.addPage();
   });
   const pdfBuffer = doc.output("arraybuffer");
+  //
+  // Generate PDF Transactions
+  //
   const doc2 = new jsPDF({
     orientation: "portrait",
     unit: "mm",
@@ -79,7 +87,7 @@ serve(async (req) => {
     transactions.map((t) => t.transaction).join("\n") ||
     "No transactions recorded";
   const lines2 = doc2.splitTextToSize(content2, 240);
-  const linesPerPage2 = 36;
+  const linesPerPage2 = 50;
   const pages2 = Array.from(
     {
       length: Math.ceil(lines2.length / linesPerPage2),
@@ -87,9 +95,8 @@ serve(async (req) => {
     (_, i) => lines2.slice(i * linesPerPage2, (i + 1) * linesPerPage2)
   );
   pages2.forEach((page, i) => {
-    doc2.setFontSize(12);
+    doc2.setFontSize(10);
     doc2.text(page, 10, 10);
-    doc2.setTextColor(160);
     doc2.text(`${i + 1}/${pages2.length}`, 180, 280);
     if (i < pages2.length - 1) doc2.addPage();
   });

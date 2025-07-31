@@ -1,8 +1,8 @@
 const { execSync } = require("node:child_process");
 const { usb, getDeviceList } = require("usb");
+const { USER_NAME } = require("./js/helpers");
 const timestamp = () => new Date().toLocaleString("sv");
 
-const USER_NAME = "pi";
 const EXT_DIR = "/media/usb";
 const LOG_NAME = "/media/usb/sips_logs.txt";
 const LOCAL_DIR = `/home/${USER_NAME}/sips_files`;

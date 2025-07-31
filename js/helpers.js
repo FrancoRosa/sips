@@ -1,13 +1,18 @@
+const { renameSync, mkdirSync, appendFileSync, readFileSync } = require("fs");
+const { execSync } = require("child_process");
+const { print } = require("unix-print");
+const { insertReport, insertTransactions } = require("./db");
 const { colors } = require("./colors");
 const { getPdf } = require("./formatjs");
-const { renameSync, mkdirSync, appendFileSync, readFileSync } = require("fs");
-const { print } = require("unix-print");
 const { sips_id } = require("../settings.json");
-const { insertReport, insertTransactions } = require("./db");
 
-const USER = "pi";
-const LOCAL_DIR = `/home/${USER}/sips_files`;
-console.log({ sips_id });
+const SERIAL_PORT = "/dev/ttyUSB0";
+const USER_NAME = execSync("ls -ld /home/* 2>/dev/null | awk '{print $3}'")
+  .toString()
+  .trim();
+
+const LOCAL_DIR = `/home/${USER_NAME}/sips_files`;
+console.log({ USER_NAME, sips_id });
 
 const getMonth = () => {
   return new Date().toLocaleDateString("sv").slice(0, 7);
@@ -97,6 +102,37 @@ const processPayload = (payload) => {
   }
 };
 
+const inspectPayload = (payload) => {
+  let reportStart = false;
+  let transactionLines = [];
+  let reports = [];
+  let reportLines = [];
+  const lines = payload.split("\n");
+  lines.forEach((line, index) => {
+    if (line.includes("MAG-")) {
+      transactionLines.push(line);
+      if (reportStart) {
+        reportStart = false;
+        reports.push(reportLines);
+        reportLines = [];
+      }
+    }
+    if (line.includes("MIDNIGHT")) {
+      reportStart = true;
+    }
+    if (reportStart == true) {
+      reportLines.push(line);
+    }
+    if (reportStart && lines.length - 1 == index) {
+      reports.push(reportLines);
+    }
+    if (lines.length - 1 == index) {
+      console.log("____ FINISH _____");
+    }
+  });
+  console.log({ transactionLines, reports });
+};
+
 const getFileName = () => {
   const date = new Date().toLocaleDateString("sv");
   const time = new Date().toLocaleTimeString("sv");
@@ -108,4 +144,7 @@ const getDateFromTx = () => {
   return `${date}.pdf`;
 };
 
-exports.processPayload = processPayload;
+// exports.processPayload = processPayload;
+exports.inspectPayload = inspectPayload;
+exports.SERIAL_PORT = SERIAL_PORT;
+exports.USER_NAME = USER_NAME;

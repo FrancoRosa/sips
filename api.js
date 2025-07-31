@@ -1,11 +1,5 @@
 const { SerialPort, ReadlineParser } = require("serialport");
-const { processPayload } = require("./js/helpers");
-const SERIAL_PORT = "/dev/ttyUSB0"
-
-// Connect to supabase
-// save transacion as text as long as the string contains "MAG-ONLINE"
-// save midnight report as text 
-// 
+const { processPayload, SERIAL_PORT } = require("./js/helpers");
 
 const port = new SerialPort({
   path: SERIAL_PORT,
