@@ -1,7 +1,7 @@
 const { renameSync, mkdirSync, appendFileSync, readFileSync } = require("fs");
 const { execSync } = require("child_process");
 const { print } = require("unix-print");
-const { insertReport, insertTransactions } = require("./db");
+const { insertReport, insertTransactions, insertData } = require("./db");
 const { colors } = require("./colors");
 const { getPdf } = require("./formatjs");
 const { sips_id } = require("../settings.json");
@@ -101,16 +101,50 @@ const processPayload = (payload) => {
     }
   }
 };
+const dateFromReport = (report) => {
+  const line = report[0];
+  if (line.includes("MIDNIGHT")) {
+    const textDate = line.split("FOR:")[1];
+    return new Date(textDate).toISOString().slice(0, 10);
+  }
+  return false;
+};
+
+const dateFromTransaction = (transaction) => {
+  if (transaction.includes("MAG")) {
+    const textDate = transaction.split(" ")[1];
+    return new Date(textDate).toISOString().slice(0, 10);
+  }
+  return false;
+};
+
+const completePayload = (payload) => {
+  let validTransactions = [];
+  let validReports = [];
+  payload.transactions.forEach((transaction) => {
+    const date = dateFromTransaction(transaction);
+    if (date) {
+      validTransactions.push({ date, transaction });
+    }
+  });
+  payload.reports.forEach((report) => {
+    const date = dateFromReport(report);
+    if (date) {
+      validReports.push({ date, report: report.join("\n") });
+    }
+  });
+  return { transactions: validTransactions, reports: validReports };
+};
 
 const inspectPayload = (payload) => {
   let reportStart = false;
-  let transactionLines = [];
+  let transactions = [];
   let reports = [];
   let reportLines = [];
   const lines = payload.split("\n");
   lines.forEach((line, index) => {
     if (line.includes("MAG-")) {
-      transactionLines.push(line);
+      transactions.push(line);
       if (reportStart) {
         reportStart = false;
         reports.push(reportLines);
@@ -126,11 +160,9 @@ const inspectPayload = (payload) => {
     if (reportStart && lines.length - 1 == index) {
       reports.push(reportLines);
     }
-    if (lines.length - 1 == index) {
-      console.log("____ FINISH _____");
-    }
   });
-  console.log({ transactionLines, reports });
+  const dataToInsert = completePayload({ reports, transactions });
+  insertData(dataToInsert);
 };
 
 const getFileName = () => {

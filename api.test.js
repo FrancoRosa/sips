@@ -40,7 +40,8 @@ POS 1: 11 POS 2: 12 POS 3: 13 POS 4: X  POS 5: X  POS 6: X  POS 7: X  POS 8: X
 `;
 
 // processPayload(payload3);
-inspectPayload(payload1 + payload3 + payload1 + payload1 + payload3);
+// inspectPayload(payload1 + payload3 + payload1 + payload1 + payload3);
+inspectPayload(payload2);
 
 // function delay(ms) {
 //   return new Promise((resolve) => setTimeout(resolve, ms));
