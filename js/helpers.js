@@ -12,7 +12,53 @@ const USER_NAME = execSync("ls -ld /home/* 2>/dev/null | awk '{print $3}'")
   .trim();
 
 const LOCAL_DIR = `/home/${USER_NAME}/sips_files`;
-console.log({ USER_NAME, sips_id });
+const BACKUPS_DIR = `/home/${USER_NAME}/sips_files/backups.json`;
+
+console.log(colors.yellow, "____________________");
+console.log("... starting process");
+console.log("... sips_id:", sips_id);
+console.log("____________________");
+
+const readBackUps = async () => {
+  const fileContent = await readFile(BACKUPS_DIR, "utf8");
+  return JSON.parse(fileContent) || { transactions: [], reports: [] };
+};
+
+const writeBackUps = async (obj) => {
+  const outputString = JSON.stringify(obj, null, 2);
+  await writeFile(BACKUPS_DIR, outputString, "utf8");
+};
+
+const addObjToBackup = async (type, payload) => {
+  const queue = await readBackUps();
+  queue[type].push(payload);
+  await writeBackUps(queue);
+};
+
+const getTransFromBackup = async () => {
+  const queue = await readBackUps();
+  if (queue.transactions.length > 0) {
+    return queue.transactions;
+  } else return false;
+};
+
+const removeTransFromBackup = async () => {
+  let queue = readBackUps();
+  queue.transactions = [];
+  await writeBackUps(queue);
+};
+
+const getReportFromBackup = () => {
+  if (queue.reports.length > 0) {
+    return queue.reports[0];
+  } else return false;
+};
+
+const removeReportFromBackup = async () => {
+  let queue = readBackUps();
+  queue.reports = reports.slice(1);
+  await writeBackUps(queue);
+};
 
 const getMonth = () => {
   return new Date().toLocaleDateString("sv").slice(0, 7);
@@ -178,5 +224,10 @@ const getDateFromTx = () => {
 
 // exports.processPayload = processPayload;
 exports.inspectPayload = inspectPayload;
+exports.addObjToBackup = addObjToBackup;
+exports.getReportFromBackup = getReportFromBackup;
+exports.getTransFromBackup = getTransFromBackup;
+exports.removeReportFromBackup = removeReportFromBackup;
+exports.removeTransFromBackup = removeTransFromBackup;
 exports.SERIAL_PORT = SERIAL_PORT;
 exports.USER_NAME = USER_NAME;
