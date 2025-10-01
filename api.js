@@ -1,12 +1,8 @@
 const { SerialPort, ReadlineParser } = require("serialport");
-const { processPayload, SERIAL_PORT } = require("./js/helpers");
+const { processPayload } = require("./js/helpers");
+const { serial } = require("./settings.json");
 
-const port = new SerialPort({
-  path: SERIAL_PORT,
-  baudRate: 1200,
-  parity: "even",
-  dataBits: 7,
-});
+const port = new SerialPort(serial);
 
 const parser = port.pipe(new ReadlineParser({ delimiter: "\r\n" }));
 

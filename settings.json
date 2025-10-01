@@ -1,3 +1,9 @@
 {
-    "sips_id": 50
+  "sips_id": 50,
+  "serial": {
+    "path": "/tmp/ttyV0",
+    "baudRate": 1200,
+    "parity": "even",
+    "dataBits": 7
+  }
 }

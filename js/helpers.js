@@ -6,7 +6,6 @@ const { colors } = require("./colors");
 const { getPdf } = require("./formatjs");
 const { sips_id } = require("../settings.json");
 
-const SERIAL_PORT = "/dev/ttyUSB0";
 const USER_NAME = execSync("ls -ld /home/* 2>/dev/null | awk '{print $3}'")
   .toString()
   .trim();
@@ -229,5 +228,5 @@ exports.getReportFromBackup = getReportFromBackup;
 exports.getTransFromBackup = getTransFromBackup;
 exports.removeReportFromBackup = removeReportFromBackup;
 exports.removeTransFromBackup = removeTransFromBackup;
-exports.SERIAL_PORT = SERIAL_PORT;
+exports.processPayload = processPayload;
 exports.USER_NAME = USER_NAME;
