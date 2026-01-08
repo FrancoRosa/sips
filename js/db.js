@@ -63,8 +63,9 @@ const insertReports = async (reports, sips_id) => {
 };
 
 const insertData = async (data, sips_id) => {
-  const txResult = await insertTransactions(data.transactions, sips_id);
-  const rxResult = await insertReports(data.reports, sips_id);
+  const transactions = await insertTransactions(data.transactions, sips_id);
+  const reports = await insertReports(data.reports, sips_id);
+  console.log("...", "transactions:", transactions, "reports:", reports);
 };
 
 exports.insertData = insertData;
